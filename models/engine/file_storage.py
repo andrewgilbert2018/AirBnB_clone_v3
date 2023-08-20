@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """
+A python script that 
 Contains the FileStorage class
 """
 
@@ -55,7 +56,7 @@ class FileStorage:
                 jo = json.load(f)
             for key in jo:
                 self.__objects[key] = classes[jo[key]["__class__"]](**jo[key])
-        except Exception as e:
+        except:
             pass
 
     def delete(self, obj=None):
@@ -70,18 +71,24 @@ class FileStorage:
         self.reload()
 
     def get(self, cls, id):
-        """get:
-        object from the file storage by class and id.
-        """
-        obj_key = '{}.{}'.format(cls.__name__, id)
-        return self.__objects.get(obj_key, None)
+        """A func to retrieve one object"""
+        try:
+            for v in self.__objects.values():
+                if v.id == id:
+                    result = v
+        except BaseException:
+            pass
+
+        return result
 
     def count(self, cls=None):
-        """count:
-        objects in storage matching the given class
-        """
+        """A func to count the number of objects in storage"""
+        with open("file.json", 'r') as f:
+            jso = json.load(f)
         if cls:
-            return len([obj for obj in self.__objects.values()
-                        if isinstance(obj, cls)])
-        else:
-            return len(self.__objects)
+            count = 0
+            for obj in jso.items():
+                if obj[1]['__class__'] == cls.__name__:
+                    count += 1
+            return count
+        return len(jso.items())
